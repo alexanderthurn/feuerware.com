@@ -134,6 +134,17 @@
 
      <script>
 
+        function checkShaderErrors(gl) {
+            const error = gl.getError();
+            if (error !== gl.NO_ERROR) {
+                let errorMessage = "WebGL Shader-Fehler: " + error;
+                
+                console.error(errorMessage);
+                alert(errorMessage);
+            }
+        }
+
+        
         // Funktion, um das Datum als [year, month, day, time in seconds] zu erhalten
 function getCurrentDateVec4() {
     let now = new Date();
@@ -145,7 +156,7 @@ function getCurrentDateVec4() {
     return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
 }
 
-function getShader(toy, oldShader) {
+function getShader(toy, app) {
     let vertex = '#version 300 es' + `
     in vec2 aPosition;
     
@@ -182,28 +193,33 @@ function getShader(toy, oldShader) {
         mainImage(fragColor, gl_FragCoord.xy);
     }`
 
-    const shader = new PIXI.Shader({
-        glProgram: new PIXI.GlProgram({
-            vertex,
-            fragment
-        }),
-        resources: {
-            all: {
-                iResolution: {value: [1920.0, 1080.0, 0.0], type: 'vec3<f32>'},
-                iTime: { value: 0.0, type: 'f32' },
-                iTimeDelta: { value: 0.0, type: 'f32' },
-                iFrameRate: { value: 0.0, type: 'f32' },
-                iFrame: { value: 0.0, type: 'i32' },
-                iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>'}, // uniform float     iChannelTime[4]; 
-                iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
-                iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
-                iDate: {value: [1920.0, 1080.0, 0.0], type: 'vec4<f32>'},
-                iSampleRate: { value: 44100, type: 'f32' }
+        const shader = new PIXI.Shader({
+            glProgram: new PIXI.GlProgram({
+                vertex,
+                fragment
+            }),
+            resources: {
+                all: {
+                    iResolution: {value: [1920.0, 1080.0, 0.0], type: 'vec3<f32>'},
+                    iTime: { value: 0.0, type: 'f32' },
+                    iTimeDelta: { value: 0.0, type: 'f32' },
+                    iFrameRate: { value: 0.0, type: 'f32' },
+                    iFrame: { value: 0.0, type: 'i32' },
+                    iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>'}, // uniform float     iChannelTime[4]; 
+                    iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
+                    iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
+                    iDate: {value: [1920.0, 1080.0, 0.0], type: 'vec4<f32>'},
+                    iSampleRate: { value: 44100, type: 'f32' }
+                },
             },
-        },
-    });
+        });
 
-    return shader
+
+
+        return shader
+
+
+  
 }
 
 
@@ -238,7 +254,7 @@ function getShader(toy, oldShader) {
                 document.getElementById('backgroundDiv').appendChild(app.canvas);
 
              
-                var shader = getShader(document.getElementById('toyTextarea').value, null)
+                var shader = getShader(document.getElementById('toyTextarea').value, app)
                 var geometry = new PIXI.Geometry({
                     attributes: {
                         aPosition:  new Float32Array([
@@ -252,9 +268,11 @@ function getShader(toy, oldShader) {
                 });
 
 
-                
+      
+
                 document.getElementById('toyButton').addEventListener('click', () => {
-                    backgroundMesh.shader = getShader(document.getElementById('toyTextarea').value, shader)
+                    backgroundMesh.shader = getShader(document.getElementById('toyTextarea').value, app)
+                    
                 })
                 const backgroundMesh = new PIXI.Mesh({
                         geometry,
@@ -293,6 +311,10 @@ function getShader(toy, oldShader) {
                     backgroundMesh.shader.resources.all.uniforms.iFrame = frame
                     backgroundMesh.shader.resources.all.uniforms.iMouse = frame
                     backgroundMesh.shader.resources.all.uniforms.iDate = getCurrentDateVec4()
+
+                    
+        checkShaderErrors(app.renderer.gl);
+        
                 })
             })
        
