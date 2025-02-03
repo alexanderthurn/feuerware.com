@@ -182,18 +182,11 @@ void main() {
 let toy = `
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    vec2 uv = fragCoord/iResolution.xy;
-    fragColor = vec4(uv.xy,0.0,1.0);
-    // Normalized pixel coordinates (from 0 to 1)
-    //vec2 uv = fragCoord/iResolution.xy;
 
-    // Time varying pixel color
-    //vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-
-    // Output to screen
-   // fragColor = vec4(col,1.0);
+   vec2 uv = fragCoord/iResolution.xy;
+    vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+   fragColor = vec4(col,1.0);
 }
-
 `
 
 
@@ -287,17 +280,13 @@ void main() {
                     let fps = 1000/time.elapsedMS
                     let lastTime = time.lastTime
 
-                   // console.log(time)
                     shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
                     shader.resources.all.uniforms.iTime = lastTime / 1000;
-                    shader.resources.all.uniforms.iResolution = [app.screen.width, app.screen.height, 0.0]
+                    shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution, app.renderer.height * app.renderer.resolution, 0.0]
                     shader.resources.all.uniforms.iFrameRate = fps
                     shader.resources.all.uniforms.iFrame = frame
                     shader.resources.all.uniforms.iMouse = frame
                     shader.resources.all.uniforms.iDate = getCurrentDateVec4()
-                    
-/*
-                        iSampleRate: { value: 0.0, type: 'f32' }*/
                 })
             })
        
