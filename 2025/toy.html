@@ -274,7 +274,8 @@ function getShader(toy, app) {
                 })
 
                 document.getElementById('toyButtonFire').addEventListener('click', () => {
-                    backgroundMesh.shader = getShader(fireCode, app)
+                    document.getElementById('toyTextarea').value = fireCode
+                    backgroundMesh.shader = getShader(document.getElementById('toyTextarea').value, app)
                 })
                 const backgroundMesh = new PIXI.Mesh({
                         geometry,
