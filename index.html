@@ -178,15 +178,37 @@ function getCurrentDateVec4() {
             app = new PIXI.Application();
             return app.init({
                 width: window.innerWidth,
-                height: window.innerHeight,
+                height: window.innerHeight+200,
                 backgroundColor: 0xf4b400,
                 antialias: true,
                 resolution: window.devicePixelRatio || 1,
-                autoDensity: true,
-                resizeTo: window
+                autoDensity: true
             })
             }).then(() => {
                 document.getElementById('backgroundDiv').appendChild(app.canvas);
+
+                let lastWidth = app.renderer.width;
+                let lastHeight = window.innerHeight + 200;
+                
+                function getViewportHeight() {
+                    return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                }
+                
+                function resizePixiApp() {
+                    const newWidth = window.innerWidth;
+                    const newHeight = getViewportHeight();
+                
+                    if (newWidth > lastWidth || newHeight > lastHeight) {
+                        app.renderer.resize(newWidth, newHeight + 200); // Immer +200px Höhe
+                        lastWidth = app.renderer.width;
+                        lastHeight = app.renderer.height;
+                    }
+                }
+                
+                // Event-Listener für Resize
+                window.addEventListener("resize", resizePixiApp);
+                
+
 
 let vertex = '#version 300 es' + `
     in vec2 aPosition;
