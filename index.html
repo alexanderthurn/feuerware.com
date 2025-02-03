@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feuerware - Games</title>
+    <style>
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4b400;
+            color: #f4b400;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        h1 {
+            color:  white;
+            font-size: 3em;
+            text-transform: uppercase;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            color:  white;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0px;
+        }
+         h3 {
+            color:  white; 
+            font-size: 1.5em;
+            text-transform: uppercase;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+        p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 10px auto;
+            opacity: 0.9;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 1.0);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+        }
+        a {
+            color: #ff6600;
+            text-decoration: none;
+            font-size: 1.5em;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+        a:hover {
+            color: #ff3300;
+            transform: scale(1.1);
+        }
+        img {
+            max-width: 180px;
+            margin: 20px;
+        }
+        img:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        #backgroundDiv {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* Hintergrund */
+        }
+    </style>
+</head>
+<body>
+<body>
+    <div id="backgroundDiv"></div>
+    <img src="2025/feuerware.png" alt="Feuerware Logo">
+    <h1>Feuerware</h1>
+    <h2>Crispy games, grilled to perfection!</h2>
+    
+    <div class="section">
+        <h3>Games</h3>
+        <p>Here are our latest games. A competitive multiplayer fart game and a bitcoin hodl / trading game. Have fun.</p>
+        <ul>
+            <li><a href="https://stealthystinkers.feuerware.com/v1" target="_blank">Stealthy Stinkers</a></li>
+            <li><a href="https://beatthehodler.feuerware.com" target="_blank">Beat the HODLer</a></li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>Older Games</h3>
+        <p>These are some of the classic games developed years ago.</p>
+        <ul>
+            <li><a href="https://www.chip.de/downloads/Antiwar_16742866.html" target="_blank">Antiwar</a></li>
+            <li><a href="/atomicblaster/" target="_blank">Atomic Blaster</a></li>
+            <li><a href="/boom/" target="_blank">Boom</a></li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <ul>
+            <li><a href="/2025/imprint.html" target="_blank">Imprint</a> / <a href="/2025/privacy.html">Data Privacy</a></li>
+        </ul>
+    </div>
+
+
+     <script>
+
+        // Funktion, um das Datum als [year, month, day, time in seconds] zu erhalten
+function getCurrentDateVec4() {
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1; // Monate sind 0-basiert
+    let day = now.getDate();
+    let seconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+    return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
+}
+
+
+        var app = null
+
+        function loadScript(url) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.type = 'text/javascript';
+                script.async = true;
+
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error(`Script load error: ${url}`));
+
+                document.head.appendChild(script);
+            });
+        }
+        
+        loadScript('2025/pixi.min.js').then( () => {
+            app = new PIXI.Application();
+            return app.init({
+                width: window.innerWidth,
+                height: window.innerHeight,
+                backgroundColor: 0xf4b400,
+                antialias: true,
+                resolution: window.devicePixelRatio || 1,
+                autoDensity: true,
+                resizeTo: window
+            })
+            }).then(() => {
+                document.getElementById('backgroundDiv').appendChild(app.canvas);
+
+                let vertex = '#version 300 es' + `
+in vec2 aPosition;
+
+out vec2 vPosition; // Neuer Standard für varyings
+
+void main() {
+    vPosition = aPosition * 0.5 + 0.5; // Normalisieren zu [0, 1]
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+}
+`;
+
+
+let fragment = '#version 300 es' +`
+uniform float uTime;
+
+in vec2 vPosition; // Empfang des varyings aus dem Vertex-Shader
+out vec4 fragColor; // Statt gl_FragColor
+
+void main() {
+    fragColor = vec4(vPosition.xy, 0.0, 1.0);
+}
+`;
+
+                var geometry = new PIXI.Geometry({
+                    attributes: {
+                        aPosition:  new Float32Array([
+                            -1, -1, // Linke untere Ecke
+                             1, -1, // Rechte untere Ecke
+                            -1,  1, // Linke obere Ecke
+                             1,  1  // Rechte obere Ecke
+                        ])
+                    },
+                    topology: 'triangle-strip'
+                });
+
+
+                const shader = new PIXI.Shader({
+                        glProgram: new PIXI.GlProgram({
+                            vertex,
+                            fragment
+                        }),
+                        resources: {
+                            all: {
+                                iResolution: {value: [1920.0, 1080.0, 0.0], type: 'vec3<f32>'},
+                                iTime: { value: 0.0, type: 'f32' },
+                                iTimeDelta: { value: 0.0, type: 'f32' },
+                                iFrameRate: { value: 0.0, type: 'f32' },
+                                iFrame: { value: 0.0, type: 'i32' },
+                                iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>'}, // uniform float     iChannelTime[4]; 
+                                iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
+                                iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
+                                iDate: {value: [1920.0, 1080.0, 0.0], type: 'vec4<f32>'},
+                                iSampleRate: { value: 44100, type: 'f32' }
+                            },
+                        },
+                });
+
+                const backgroundMesh = new PIXI.Mesh({
+                        geometry,
+                        shader
+                });
+                app.stage.addChild(backgroundMesh)
+
+                // **Mausbewegung erfassen**
+                app.renderer.events.pointermove = (event) => {
+                    shader.resources.all.uniforms.iMouse.value = [event.globalX, event.globalY, 0.0, 0.0];
+                };
+
+                // **Maustasten-Klick erfassen**
+                app.renderer.events.pointerdown = (event) => {
+                    shader.resources.all.uniforms.iMouse.value[2] = event.globalX; // Click-X
+                    shader.resources.all.uniforms.iMouse.value[3] = event.globalY; // Click-Y
+                };
+
+                // **Maustasten-Loslassen**
+                app.renderer.events.pointerup = () => {
+                    shader.resources.all.uniforms.iMouse.value[2] = 0.0;
+                    shader.resources.all.uniforms.iMouse.value[3] = 0.0;
+                };
+
+                let frame = -1
+                app.ticker.add((time) => {
+                    frame++
+                    let deltaMS = time.deltaMS
+                    let fps = 1000/time.elapsedMS
+                    let lastTime = time.lastTime
+
+                   // console.log(time)
+                    shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
+                    shader.resources.all.uniforms.iTime = lastTime / 1000;
+                    shader.resources.all.uniforms.iResolution = [app.screen.width, app.screen.height, 0.0]
+                    shader.resources.all.uniforms.iFrameRate = fps
+                    shader.resources.all.uniforms.iFrame = frame
+                    shader.resources.all.uniforms.iMouse = frame
+                    shader.resources.all.uniforms.iDate = getCurrentDateVec4()
+                    
+/*
+                        iSampleRate: { value: 0.0, type: 'f32' }*/
+                })
+            })
+       
+        
+    </script>
+</body>
+</html>
