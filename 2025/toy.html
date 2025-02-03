@@ -215,7 +215,8 @@ function getShader(toy, app) {
             },
         });
 
-
+        console.log(vertex)
+        console.log(fragment)
 
         return shader
 
@@ -410,7 +411,7 @@ vec2 tr(vec2 p)
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    float map_radius = mod(2000.0 - 1000.0 * (time*0.05),2000.0);
+    float map_radius = mod(2000.0 + 1000.0 * (time*0.05),10000.0);
 	vec2 focus = vec2(map_radius,0.0);
 	float crack_radius = 50.0;
 
