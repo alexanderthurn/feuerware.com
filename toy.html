@@ -145,7 +145,7 @@ function getCurrentDateVec4() {
     return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
 }
 
-function getShader(toy) {
+function getShader(toy, oldShader) {
     let vertex = '#version 300 es' + `
     in vec2 aPosition;
     
@@ -238,7 +238,7 @@ function getShader(toy) {
                 document.getElementById('backgroundDiv').appendChild(app.canvas);
 
              
-                var shader = getShader(document.getElementById('toyTextarea').value)
+                var shader = getShader(document.getElementById('toyTextarea').value, null)
                 var geometry = new PIXI.Geometry({
                     attributes: {
                         aPosition:  new Float32Array([
@@ -254,7 +254,7 @@ function getShader(toy) {
 
                 
                 document.getElementById('toyButton').addEventListener('click', () => {
-                    backgroundMesh.shader = getShader(document.getElementById('toyTextarea').value)
+                    backgroundMesh.shader = getShader(document.getElementById('toyTextarea').value, shader)
                 })
                 const backgroundMesh = new PIXI.Mesh({
                         geometry,
@@ -264,19 +264,19 @@ function getShader(toy) {
 
                 // **Mausbewegung erfassen**
                 app.renderer.events.pointermove = (event) => {
-                    shader.resources.all.uniforms.iMouse.value = [event.globalX, event.globalY, 0.0, 0.0];
+                    backgroundMesh.shader.resources.all.uniforms.iMouse.value = [event.globalX, event.globalY, 0.0, 0.0];
                 };
 
                 // **Maustasten-Klick erfassen**
                 app.renderer.events.pointerdown = (event) => {
-                    shader.resources.all.uniforms.iMouse.value[2] = event.globalX; // Click-X
-                    shader.resources.all.uniforms.iMouse.value[3] = event.globalY; // Click-Y
+                    backgroundMesh.shader.resources.all.uniforms.iMouse.value[2] = event.globalX; // Click-X
+                    backgroundMesh.shader.resources.all.uniforms.iMouse.value[3] = event.globalY; // Click-Y
                 };
 
                 // **Maustasten-Loslassen**
                 app.renderer.events.pointerup = () => {
-                    shader.resources.all.uniforms.iMouse.value[2] = 0.0;
-                    shader.resources.all.uniforms.iMouse.value[3] = 0.0;
+                    backgroundMesh.shader.resources.all.uniforms.iMouse.value[2] = 0.0;
+                    backgroundMesh.shader.resources.all.uniforms.iMouse.value[3] = 0.0;
                 };
 
                 let frame = -1
@@ -286,13 +286,13 @@ function getShader(toy) {
                     let fps = 1000/time.elapsedMS
                     let lastTime = time.lastTime
 
-                    shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
-                    shader.resources.all.uniforms.iTime = lastTime / 1000;
-                    shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution, app.renderer.height * app.renderer.resolution, 0.0]
-                    shader.resources.all.uniforms.iFrameRate = fps
-                    shader.resources.all.uniforms.iFrame = frame
-                    shader.resources.all.uniforms.iMouse = frame
-                    shader.resources.all.uniforms.iDate = getCurrentDateVec4()
+                    backgroundMesh.shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
+                    backgroundMesh.shader.resources.all.uniforms.iTime = lastTime / 1000;
+                    backgroundMesh.shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution, app.renderer.height * app.renderer.resolution, 0.0]
+                    backgroundMesh.shader.resources.all.uniforms.iFrameRate = fps
+                    backgroundMesh.shader.resources.all.uniforms.iFrame = frame
+                    backgroundMesh.shader.resources.all.uniforms.iMouse = frame
+                    backgroundMesh.shader.resources.all.uniforms.iDate = getCurrentDateVec4()
                 })
             })
        
