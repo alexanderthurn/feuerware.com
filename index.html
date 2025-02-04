@@ -157,6 +157,48 @@ function getCurrentDateVec4() {
     return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
 }
 
+/**
+ * Get current browser viewport height
+ */
+ function _get_window_height() {
+    return window.innerHeight || 
+           document.documentElement.clientHeight ||
+           document.body.clientHeight || 0;
+}
+
+/**
+ * Get current absolute window scroll position
+ */
+function _get_window_Yscroll() {
+    return window.pageYOffset || 
+           document.body.scrollTop ||
+           document.documentElement.scrollTop || 0;
+}
+
+/**
+ * Get current absolute document height
+ */
+function _get_doc_height() {
+    return Math.max(
+        document.body.scrollHeight || 0, 
+        document.documentElement.scrollHeight || 0,
+        document.body.offsetHeight || 0, 
+        document.documentElement.offsetHeight || 0,
+        document.body.clientHeight || 0, 
+        document.documentElement.clientHeight || 0
+    );
+}
+
+
+/**
+ * Get current vertical scroll percentage
+ */
+function _get_scroll_percentage() {
+    return (
+        (_get_window_Yscroll() + _get_window_height()) / _get_doc_height()
+    );
+}
+
 
         var app = null
     
@@ -187,19 +229,15 @@ function getCurrentDateVec4() {
             }).then(() => {
                 document.getElementById('backgroundDiv').appendChild(app.canvas);
 
-                let lastWidth = app.renderer.width;
+                let lastWidth = window.innerWidth;
                 let lastHeight = window.innerHeight + 200;
-                
-                function getViewportHeight() {
-                    return window.visualViewport ? window.visualViewport.height : window.innerHeight;
-                }
                 
                 function resizePixiApp() {
                     const newWidth = window.innerWidth;
-                    const newHeight = getViewportHeight();
+                    const newHeight = window.innerHeight + 200;
                 
-                    if (newWidth > lastWidth || newHeight > lastHeight) {
-                        app.renderer.resize(newWidth, newHeight + 200); // Immer +200px Höhe
+                    if (newWidth !== lastWidth || newHeight > lastHeight) {
+                        app.renderer.resize(newWidth, newHeight);
                         lastWidth = app.renderer.width;
                         lastHeight = app.renderer.height;
                     }
@@ -436,11 +474,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
                 let frame = -1
                 app.ticker.add((time) => {
-                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrollPercent = (scrollTop / scrollHeight);
+                    const scrollPercent = _get_scroll_percentage()
                     const modifiedPercent = 1.0 + scrollPercent*0.5
-
+                    console.log(scrollPercent)
 
                     frame++
                     let deltaMS = time.deltaMS
