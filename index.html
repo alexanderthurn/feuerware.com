@@ -110,9 +110,81 @@
             height: 100vh;
             z-index: -1; /* Hintergrund */
         }
+         /* Vollbild-Ladescreen */
+         #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+       
+          }
+          
+          .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh; /* Nimmt 50% der Bildschirmhöhe ein */
+          }
+          
+ 
+          .loading-text {
+            font-weight: bold;
+            color: white; /* Innere Schrift bleibt weiß */
+            text-align: center;
+            -webkit-text-stroke: 2px transparent; /* Durchsichtige Umrandung */
+            background: linear-gradient(to right, #7b3f00, #ff4500, #ffcc00, #7b3f00); /* Farbverlauf von Dunkelbraun zu Feuerfarben */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: white;
+                
+            font-size: 5vw;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            transform: translateY(-50%);
+          }
+
+          @keyframes flicker {
+            0% { opacity: 1; transform: scale(1); border-top-color: #ff4500; border-radius: 80%}
+            20% { opacity: 0.8; transform: scale(1.02);border-top-color: #ffcc00; border-radius: 80%; }
+            40% { opacity: 1; transform: scale(1);border-top-color: #ff4500;border-radius: 80%; }
+            60% { opacity: 0.9; transform: scale(1.03);border-top-color: #ffcc00;border-radius: 80%; }
+            80% { opacity: 1; transform: scale(1);border-top-color: #ff4500;border-radius: 80%;  }
+            100% { opacity: 0.7; transform: scale(1.05);border-top-color: #ffcc00;border-radius: 80%; }
+          }
+          
+          
+
+
+                /* Animierter Spinner */
+            .spinner {
+                width: 100px;
+                height: 250px;
+                border-top: 50px solid #ff4500;
+                border-radius: 90%;
+                animation: flicker 0.2s infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
     </style>
 </head>
 <body>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text">Warming up<br />the oven</div>
+
+    </div>
+
     <div id="backgroundDiv"></div>
     <img id="imgLogo" src="2025/feuerware.png" alt="Feuerware Logo">
     <h1>Feuerware</h1>
@@ -139,7 +211,7 @@
     
     <div class="section">
         <ul>
-            <li><a href="/2025/imprint.html" target="_blank">Imprint</a> / <a href="/2025/privacy.html">Data Privacy</a></li>
+            <li><a href="/2025/imprint.html" target="_blank">Imprint</a> <a href="/2025/privacy.html">Data Privacy</a></li>
         </ul>
     </div>
 
@@ -230,6 +302,10 @@ function getViewportHeight() {
             });
         }
         
+        const loader = document.getElementById('loader');
+        const minimumLoadTime = 2000; 
+        const startLoadTime = Date.now();
+
         loadScript('2025/pixi.min.js').then( () => {
             app = new PIXI.Application();
             return app.init({
@@ -445,7 +521,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                     topology: 'triangle-strip'
                 });
 
+                const scrollPercent = _get_scroll_percentage()
+                const modifiedPercent = 1.0 + scrollPercent*0.5
 
+               
                 const shader = new PIXI.Shader({
                         glProgram: new PIXI.GlProgram({
                             vertex,
@@ -453,15 +532,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                         }),
                         resources: {
                             all: {
-                                iResolution: {value: [1920.0, 1080.0, 0.0], type: 'vec3<f32>'},
-                                iTime: { value: 0.0, type: 'f32' },
-                                iTimeDelta: { value: 0.0, type: 'f32' },
-                                iFrameRate: { value: 0.0, type: 'f32' },
-                                iFrame: { value: 0.0, type: 'i32' },
+                                iResolution: {value:  [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0], type: 'vec3<f32>'},
+                                iTime: { value: 0.1, type: 'f32' },
+                                iTimeDelta: { value: 0.01, type: 'f32' },
+                                iFrameRate: { value: 15.0, type: 'f32' },
+                                iFrame: { value: 0, type: 'i32' },
                                 iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>'}, // uniform float     iChannelTime[4]; 
                                 iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
                                 iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
-                                iDate: {value: [1920.0, 1080.0, 0.0], type: 'vec4<f32>'},
+                                iDate: {value: getCurrentDateVec4(), type: 'vec4<f32>'},
                                 iSampleRate: { value: 44100, type: 'f32' }
                             },
                         },
@@ -490,7 +569,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                     shader.resources.all.uniforms.iMouse.value[3] = 0.0;
                 };
 
-                let frame = -1
+                let frame = -1 
+                
+                const elapsed = Date.now() - startLoadTime;
+                const remainingTime = Math.max(0, minimumLoadTime - elapsed);
+                setTimeout(() => {
+                    // Ladescreen ausblenden, wenn Assets geladen sind und Mindestzeit abgelaufen ist
+                    document.getElementById('loader').style.display = 'none';
+                  }, remainingTime);
+
                 app.ticker.add((time) => {
                     const scrollPercent = _get_scroll_percentage()
                     const modifiedPercent = 1.0 + scrollPercent*0.5
@@ -499,8 +586,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                     let deltaMS = time.deltaMS
                     let fps = 1000/time.elapsedMS
                     let lastTime = time.lastTime
+                 
 
-                    
                     shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
                     shader.resources.all.uniforms.iTime = lastTime / 1000;
                     shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0]
@@ -509,7 +596,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                     shader.resources.all.uniforms.iMouse = frame
                     shader.resources.all.uniforms.iDate = getCurrentDateVec4()
                 })
-            })
+            }).catch((err) => {
+                console.error('Fehler beim Laden des Shaders:', err);
+                document.getElementById('loader').style.display = 'none';
+              });
        
         
     </script>
