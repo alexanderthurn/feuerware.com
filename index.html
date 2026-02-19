@@ -885,6 +885,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 document.getElementById('loader').style.display = 'none';
             }, remainingTime);
 
+            let lowFpsCounter = 0;
+
             app.ticker.add((time) => {
                 if (!shader) return;
                 const scrollPercent = _get_scroll_percentage()
@@ -895,6 +897,31 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 let fps = 1000 / time.elapsedMS
                 let lastTime = time.lastTime
 
+
+                // Automatic Performance Detection
+                // Only check after initial warm-up (e.g., 60 frames)
+                if (frame > 60) {
+                    if (fps < 25) {
+                        lowFpsCounter++;
+                    } else {
+                        lowFpsCounter = Math.max(0, lowFpsCounter - 1); // Decay counter
+                    }
+
+                    // If sustained low FPS for approx 3 seconds (assuming ~25-30fps check rate, let's say 90 bad frames)
+                    if (lowFpsCounter > 90) {
+                        console.warn("Low performance detected. Switching Oven off.");
+                        const toggle = document.getElementById('performanceToggle');
+                        const label = document.getElementById('ovenLabel');
+                        toggle.checked = false;
+
+                        // Trigger the change manually
+                        document.getElementById('backgroundDiv').classList.add('hidden');
+                        label.textContent = "Oven: OFF";
+                        app.stop();
+
+                        lowFpsCounter = 0; // Reset
+                    }
+                }
 
                 shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
                 shader.resources.all.uniforms.iTime = lastTime / 1000;
