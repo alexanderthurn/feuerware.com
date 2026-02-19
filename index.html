@@ -1,117 +1,317 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feuerware - Games</title>
     <style>
+        :root {
+            --primary: #ff4500;
+            --accent: #ffcc00;
+            --dark-bg: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(20, 20, 20, 0.8);
+            --text-color: #ffffff;
+            --font-main: 'Arial', sans-serif;
+        }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: 
-            radial-gradient(circle at 30% 50%, rgba(255, 100, 0, 0.6), transparent 60%),
-            radial-gradient(circle at 70% 50%, rgba(136, 60, 19, 0.8), transparent 60%),
-            linear-gradient(to right, #000a50, orange);
-        background-blend-mode: overlay;
-            color: #fff;
+            font-family: var(--font-main);
+            background:
+                radial-gradient(circle at 30% 50%, rgba(255, 100, 0, 0.4), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(136, 60, 19, 0.6), transparent 60%),
+                linear-gradient(to right, #000a20, #2a1000);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
-        }
-        h1 {
-            color:  white;
-            font-size: 3em;
-            text-transform: uppercase;
-            margin: 20px 0;
-            letter-spacing: 2px;
-            display: none;
-        }
-        h2 {
-            font-weight: bold;
-            color: white; /* Innere Schrift bleibt weiß */
-            text-align: center;
-            -webkit-text-stroke: 2px transparent; /* Durchsichtige Umrandung */
-            background: linear-gradient(to right, #7b3f00, #ff4500, #ffcc00, #7b3f00); /* Farbverlauf von Dunkelbraun zu Feuerfarben */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: white;
-                
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-
-        }
-         h3 {
-            color:  white; 
-            font-size: 1.5em;
-            text-transform: uppercase;
-            margin: 20px 0;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        p {
-            font-size: 1.2em;
-            max-width: 600px;
-            margin: 10px auto;
-            opacity: 0.9;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        .section {
-            margin: 40px 0;
-            padding: 20px;
-            width: 80%;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            backdrop-filter: blur(10px) brightness(0.8) contrast(1.5) saturate(2);
-
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 1.0);
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            margin: 15px 0;
-        }
-        a {
-            color: #ff6600;
-            text-decoration: none;
-            font-size: 1.5em;
-            transition: all 0.3s ease-in-out;
-            font-weight: bold;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px;
-            border-radius: 5px;
-            -webkit-text-stroke: 1px black;
-        }
-        a:hover {
-            color: #ff3300;
-            transform: scale(1.1);
-        }
-        img {
-            max-width: 180px;
-            margin: 20px;
-        }
-        img:hover {
-            transform: rotate(10deg) scale(1.1);
+            min-height: 100vh;
         }
 
+        /* Shader Canvas Wrapper */
         #backgroundDiv {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1; /* Hintergrund */
+            z-index: -1;
+            transition: opacity 0.5s ease;
         }
-         /* Vollbild-Ladescreen */
-         #loader {
+
+        .hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        /* Container for content */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3em;
+            text-transform: uppercase;
+            margin: 20px 0;
+            letter-spacing: 2px;
+            display: none;
+            /* Hidden as per original, using logo instead */
+        }
+
+        h2.subtitle {
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(to right, #ff8000, #ff4500, #ffcc00, #ff8000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5em;
+            /* Slightly larger */
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 10px 0 30px 0;
+            text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h3 {
+            color: var(--accent);
+            font-size: 1.8em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        p {
+            font-size: 1.1em;
+            max-width: 700px;
+            margin: 10px auto;
+            line-height: 1.6;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Grid Layouts */
+        .grid-section {
+            width: 100%;
+            margin: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(255, 69, 0, 0.3);
+            /* Orange glow */
+            border-color: var(--primary);
+        }
+
+        .card h4 {
+            margin: 0 0 10px 0;
+            color: white;
+            font-size: 1.4em;
+        }
+
+        .card p {
+            font-size: 0.95em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff4500, #ff8c00);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.6);
+            background: linear-gradient(45deg, #ff6347, #ffcc00);
+        }
+
+        /* Team Section */
+        .team-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .team-member {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s;
+        }
+
+        .team-member:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .team-member h4 {
+            margin: 0;
+            color: var(--accent);
+            font-size: 1.3em;
+        }
+
+        .team-member span {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer Links */
+        .footer-links {
+            margin: 50px 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        img.logo {
+            max-width: 220px;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        img.logo:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        /* Toggle Switch */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .control-label {
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #ddd;
+        }
+
+
+        /* Vollbild-Ladescreen */
+        #loader {
             position: fixed;
             top: 0;
             left: 0;
@@ -123,171 +323,257 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-       
-          }
-          
-          .spinner-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 50vh; /* Nimmt 50% der Bildschirmhöhe ein */
-          }
-          
- 
-          .loading-text {
+        }
+
+        .loading-text {
             font-weight: bold;
-            color: white; /* Innere Schrift bleibt weiß */
+            color: white;
             text-align: center;
-            -webkit-text-stroke: 2px transparent; /* Durchsichtige Umrandung */
-            background: linear-gradient(to right, #7b3f00, #ff4500, #ffcc00, #7b3f00); /* Farbverlauf von Dunkelbraun zu Feuerfarben */
+            -webkit-text-stroke: 2px transparent;
+            background: linear-gradient(to right, #7b3f00, #ff4500, #ffcc00, #7b3f00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: white;
-                
-            font-size: 5vw;
+            font-size: 3vw;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            transform: translateY(-50%);
-          }
+            margin-top: 20px;
+        }
 
-          @keyframes flicker {
-            0% { opacity: 1; transform: scale(1); border-top-color: #ff4500; border-radius: 80%}
-            20% { opacity: 0.8; transform: scale(1.02);border-top-color: #ffcc00; border-radius: 80%; }
-            40% { opacity: 1; transform: scale(1);border-top-color: #ff4500;border-radius: 80%; }
-            60% { opacity: 0.9; transform: scale(1.03);border-top-color: #ffcc00;border-radius: 80%; }
-            80% { opacity: 1; transform: scale(1);border-top-color: #ff4500;border-radius: 80%;  }
-            100% { opacity: 0.7; transform: scale(1.05);border-top-color: #ffcc00;border-radius: 80%; }
-          }
-          
-          
-
-
-                /* Animierter Spinner */
-            .spinner {
-                width: 100px;
-                height: 250px;
-                border-top: 50px solid #ff4500;
-                border-radius: 90%;
-                animation: flicker 0.2s infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+        @keyframes flicker {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                border-top-color: #ff4500;
+                border-radius: 80%
             }
 
+            20% {
+                opacity: 0.8;
+                transform: scale(1.02);
+                border-top-color: #ffcc00;
+                border-radius: 80%;
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1);
+                border-top-color: #ff4500;
+                border-radius: 80%;
+            }
+
+            60% {
+                opacity: 0.9;
+                transform: scale(1.03);
+                border-top-color: #ffcc00;
+                border-radius: 80%;
+            }
+
+            80% {
+                opacity: 1;
+                transform: scale(1);
+                border-top-color: #ff4500;
+                border-radius: 80%;
+            }
+
+            100% {
+                opacity: 0.7;
+                transform: scale(1.05);
+                border-top-color: #ffcc00;
+                border-radius: 80%;
+            }
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 69, 0, 0.1);
+            border-top: 8px solid #ff4500;
+            border-radius: 50%;
+            animation: spin 1s linear infinite, flicker 2s infinite alternate;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <div id="loader">
         <div class="spinner"></div>
-        <div class="loading-text">Warming up<br />the oven</div>
-
+        <div class="loading-text">Igniting...</div>
     </div>
 
+    <!-- Background Shader Canvas -->
     <div id="backgroundDiv"></div>
-    <img id="imgLogo" src="2025/feuerware.png" alt="Feuerware Logo">
-    <h1>Feuerware</h1>
-    <h2>Crispy games, grilled to perfection!</h2>
-    
-    <div class="section">
-        <h3>Games</h3>
-        <p>Here are our latest games. A competitive multiplayer fart game and a bitcoin hodl / trading game. Have fun.</p>
-        <ul>
-            <li><a href="https://stealthystinkers.feuerware.com/v1" target="_blank">Stealthy Stinkers</a></li>
-            <li><a href="https://beatthehodler.feuerware.com" target="_blank">Beat the HODLer</a></li>
-        </ul>
+
+    <!-- UI Controls -->
+    <div class="controls">
+        <span class="control-label" id="ovenLabel">Oven: ON</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="performanceToggle" checked>
+            <span class="slider"></span>
+        </label>
     </div>
-    
-    <div class="section">
-        <h3>Older Games</h3>
-        <p>These are some of the classic games developed years ago.</p>
-        <ul>
-            <li><a href="https://www.chip.de/downloads/Antiwar_16742866.html" target="_blank">Antiwar</a></li>
-            <li><a href="/atomicblaster/" target="_blank">Atomic Blaster</a></li>
-            <li><a href="/boom/" target="_blank">Boom</a></li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <ul>
-            <li><a href="/2025/imprint.html" target="_blank">Imprint</a> <a href="/2025/privacy.html">Data Privacy</a></li>
-        </ul>
+
+    <div class="container">
+        <img id="imgLogo" class="logo" src="2025/feuerware.png" alt="Feuerware Logo">
+        <h2 class="subtitle">Crispy games, grilled to perfection!</h2>
+
+        <!-- Latest Games Section -->
+        <div class="grid-section">
+            <h3>Latest Games</h3>
+            <p>Fresh from the oven. Our newest multiplayer experiences.</p>
+            <div class="grid">
+                <div class="card">
+                    <h4>KNIRPS & KNALL</h4>
+                    <p>A competitive multiplayer fart game. Silent but deadly.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="https://stealthystinkers.feuerware.com/v1" target="_blank" class="btn">V1</a>
+                        <a href="https://alexanderthurn.github.io/hiddennotdangerous/v2/" target="_blank"
+                            class="btn">V2</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Diception</h4>
+                    <p>A fast-paced, neon-styled dice strategy game.</p>
+                    <a href="https://diception.feuerware.com/" target="_blank" class="btn">Play</a>
+                </div>
+                <div class="card">
+                    <h4>Beat the HODLer</h4>
+                    <p>Bitcoin trading simulation. Hold on for dear life.</p>
+                    <a href="https://beatthehodler.feuerware.com" target="_blank" class="btn">Play</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classic Games Section -->
+        <div class="grid-section">
+            <h3>Classic Games</h3>
+            <p>The legendary titles that started it all.</p>
+            <div class="grid">
+                <div class="card">
+                    <h4>Antiwar</h4>
+                    <p>Tactical warfare strategy.</p>
+                    <a href="https://www.chip.de/downloads/Antiwar_16742866.html" target="_blank"
+                        class="btn">Download</a>
+                </div>
+                <div class="card">
+                    <h4>Atomic Blaster</h4>
+                    <p>Nuclear arcade action.</p>
+                    <a href="/atomicblaster/" target="_blank" class="btn">Download</a>
+                </div>
+                <div class="card">
+                    <h4>Boom</h4>
+                    <p>Explosive puzzle fun.</p>
+                    <a href="/boom/" target="_blank" class="btn">Download</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="grid-section">
+            <h3>The Team</h3>
+            <div class="team-container">
+                <div class="team-member">
+                    <h4>Alexander Thurn</h4>
+                    <span>Developer</span>
+                </div>
+                <div class="team-member">
+                    <h4>Torsten Stelljes</h4>
+                    <span>Developer</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-links">
+            <a href="/2025/imprint.html" target="_blank">Imprint</a>
+            <a href="/2025/privacy.html">Data Privacy</a>
+        </div>
     </div>
 
 
-     <script>
+    <script>
 
         // Funktion, um das Datum als [year, month, day, time in seconds] zu erhalten
-function getCurrentDateVec4() {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = now.getMonth() + 1; // Monate sind 0-basiert
-    let day = now.getDate();
-    let seconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        function getCurrentDateVec4() {
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth() + 1; // Monate sind 0-basiert
+            let day = now.getDate();
+            let seconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-    return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
-}
+            return [year, month, day, seconds]; // vec4 (year, month, day, time in seconds)
+        }
 
-/**
- * Get current browser viewport height
- */
- function _get_window_height() {
-    return window.innerHeight || 
-           document.documentElement.clientHeight ||
-           document.body.clientHeight || 0;
-}
+        /**
+         * Get current browser viewport height
+         */
+        function _get_window_height() {
+            return window.innerHeight ||
+                document.documentElement.clientHeight ||
+                document.body.clientHeight || 0;
+        }
 
-/**
- * Get current absolute window scroll position
- */
-function _get_window_Yscroll() {
-    return window.pageYOffset || 
-           document.body.scrollTop ||
-           document.documentElement.scrollTop || 0;
-}
+        /**
+         * Get current absolute window scroll position
+         */
+        function _get_window_Yscroll() {
+            return window.pageYOffset ||
+                document.body.scrollTop ||
+                document.documentElement.scrollTop || 0;
+        }
 
-/**
- * Get current absolute document height
- */
-function _get_doc_height() {
-    return Math.max(
-        document.body.scrollHeight || 0, 
-        document.documentElement.scrollHeight || 0,
-        document.body.offsetHeight || 0, 
-        document.documentElement.offsetHeight || 0,
-        document.body.clientHeight || 0, 
-        document.documentElement.clientHeight || 0
-    );
-}
+        /**
+         * Get current absolute document height
+         */
+        function _get_doc_height() {
+            return Math.max(
+                document.body.scrollHeight || 0,
+                document.documentElement.scrollHeight || 0,
+                document.body.offsetHeight || 0,
+                document.documentElement.offsetHeight || 0,
+                document.body.clientHeight || 0,
+                document.documentElement.clientHeight || 0
+            );
+        }
 
 
-/**
- * Get current vertical scroll percentage
- */
-function _get_scroll_percentage() {
-    return (
-        (_get_window_Yscroll() + _get_window_height()) / _get_doc_height()
-    );
-}
+        /**
+         * Get current vertical scroll percentage
+         */
+        function _get_scroll_percentage() {
+            return (
+                (_get_window_Yscroll() + _get_window_height()) / _get_doc_height()
+            );
+        }
 
-const audioPlay = async url => {
-    const context = new AudioContext();
-    const source = context.createBufferSource();
-    const audioBuffer = await fetch(url)
-      .then(res => res.arrayBuffer())
-      .then(ArrayBuffer => context.decodeAudioData(ArrayBuffer));
-  
-    source.buffer = audioBuffer;
-    source.connect(context.destination);
-    source.start();
-  };
+        const audioPlay = async url => {
+            const context = new AudioContext();
+            const source = context.createBufferSource();
+            const audioBuffer = await fetch(url)
+                .then(res => res.arrayBuffer())
+                .then(ArrayBuffer => context.decodeAudioData(ArrayBuffer));
 
-function getViewportHeight() {
-    return window.outerHeight  ? window.outerHeight : window.innerHeight;
-}
+            source.buffer = audioBuffer;
+            source.connect(context.destination);
+            source.start();
+        };
+
+        function getViewportHeight() {
+            return window.outerHeight ? window.outerHeight : window.innerHeight;
+        }
         var app = null
-    
+        var shader = null;
+
         function loadScript(url) {
             return new Promise((resolve, reject) => {
                 const script = document.createElement('script');
@@ -301,48 +587,69 @@ function getViewportHeight() {
                 document.head.appendChild(script);
             });
         }
-        
+
         const loader = document.getElementById('loader');
-        const minimumLoadTime = 2000; 
+        const minimumLoadTime = 1500;
         const startLoadTime = Date.now();
 
-        loadScript('2025/pixi.min.js').then( () => {
+        // Performance Toggle Logic
+        const performanceToggle = document.getElementById('performanceToggle');
+        const backgroundDiv = document.getElementById('backgroundDiv');
+
+        performanceToggle.addEventListener('change', (e) => {
+            const label = document.getElementById('ovenLabel');
+            if (e.target.checked) {
+                // High Quality Mode
+                backgroundDiv.classList.remove('hidden');
+                label.textContent = "Oven: ON";
+                if (app) app.start();
+            } else {
+                // Low Performance Mode
+                backgroundDiv.classList.add('hidden');
+                label.textContent = "Oven: OFF";
+                if (app) app.stop();
+            }
+        });
+
+        loadScript('2025/pixi.min.js').then(() => {
             app = new PIXI.Application();
             return app.init({
                 width: window.innerWidth,
                 height: getViewportHeight(),
                 backgroundColor: 0x000000,
-                antialias: true,
-                resolution: window.devicePixelRatio || 1,
+                backgroundAlpha: 0, // Transparent, so CSS bg shows if shader fails or is minimal
+                antialias: false, // Performance
+                resolution: 1, // Cap resolution for performance
                 autoDensity: true
             })
-            }).then(() => {
+        }).then(() => {
 
 
-                document.getElementById('imgLogo').onclick = () => audioPlay('2025/feuerware.mp3');
+            document.getElementById('imgLogo').onclick = () => audioPlay('2025/feuerware.mp3');
 
-                document.getElementById('backgroundDiv').appendChild(app.canvas);
+            document.getElementById('backgroundDiv').appendChild(app.canvas);
 
-                let lastWidth = window.innerWidth;
-                let lastHeight = getViewportHeight();
-                
-                function resizePixiApp() {
-                    const newWidth = window.innerWidth;
-                    const newHeight = getViewportHeight();
-                
-                    if (newWidth !== lastWidth || newHeight > lastHeight) {
-                        app.renderer.resize(newWidth, newHeight);
-                        lastWidth = app.renderer.width;
-                        lastHeight = app.renderer.height;
-                    }
+            let lastWidth = window.innerWidth;
+            let lastHeight = getViewportHeight();
+
+            function resizePixiApp() {
+                if (!app || !app.renderer) return;
+                const newWidth = window.innerWidth;
+                const newHeight = getViewportHeight();
+
+                if (newWidth !== lastWidth || newHeight > lastHeight) {
+                    app.renderer.resize(newWidth, newHeight);
+                    lastWidth = app.renderer.width;
+                    lastHeight = app.renderer.height;
                 }
-                
-                // Event-Listener für Resize
-                window.addEventListener("resize", resizePixiApp);
-                
+            }
+
+            // Event-Listener für Resize
+            window.addEventListener("resize", resizePixiApp);
 
 
-let vertex = '#version 300 es' + `
+
+            let vertex = '#version 300 es' + `
     in vec2 aPosition;
     
     out vec2 vPosition; // Neuer Standard für varyings
@@ -352,9 +659,9 @@ let vertex = '#version 300 es' + `
         gl_Position = vec4(aPosition, 0.0, 1.0);
     }
 `;
-/* thanks to https://www.shadertoy.com/view/Xtf3WB */
+            /* thanks to https://www.shadertoy.com/view/Xtf3WB */
 
-let fragment = '#version 300 es' +`
+            let fragment = '#version 300 es' + `
    uniform vec3      iResolution;           // viewport resolution (in pixels)
     uniform float     iTime;                 // shader playback time (in seconds)
     uniform float     iTimeDelta;            // render time (in seconds)
@@ -509,99 +816,100 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         mainImage(fragColor, gl_FragCoord.xy);
     }`
 
-                var geometry = new PIXI.Geometry({
-                    attributes: {
-                        aPosition:  new Float32Array([
-                            -1, -1, // Linke untere Ecke
-                             1, -1, // Rechte untere Ecke
-                            -1,  1, // Linke obere Ecke
-                             1,  1  // Rechte obere Ecke
-                        ])
+            var geometry = new PIXI.Geometry({
+                attributes: {
+                    aPosition: new Float32Array([
+                        -1, -1, // Linke untere Ecke
+                        1, -1, // Rechte untere Ecke
+                        -1, 1, // Linke obere Ecke
+                        1, 1  // Rechte obere Ecke
+                    ])
+                },
+                topology: 'triangle-strip'
+            });
+
+            const scrollPercent = _get_scroll_percentage()
+            const modifiedPercent = 1.0 + scrollPercent * 0.5
+
+
+            shader = new PIXI.Shader({
+                glProgram: new PIXI.GlProgram({
+                    vertex,
+                    fragment
+                }),
+                resources: {
+                    all: {
+                        iResolution: { value: [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0], type: 'vec3<f32>' },
+                        iTime: { value: 0.1, type: 'f32' },
+                        iTimeDelta: { value: 0.01, type: 'f32' },
+                        iFrameRate: { value: 15.0, type: 'f32' },
+                        iFrame: { value: 0, type: 'i32' },
+                        iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' }, // uniform float     iChannelTime[4]; 
+                        iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
+                        iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
+                        iDate: { value: getCurrentDateVec4(), type: 'vec4<f32>' },
+                        iSampleRate: { value: 44100, type: 'f32' }
                     },
-                    topology: 'triangle-strip'
-                });
+                },
+            });
 
-                const scrollPercent = _get_scroll_percentage()
-                const modifiedPercent = 1.0 + scrollPercent*0.5
+            const backgroundMesh = new PIXI.Mesh({
+                geometry,
+                shader
+            });
+            app.stage.addChild(backgroundMesh)
 
-               
-                const shader = new PIXI.Shader({
-                        glProgram: new PIXI.GlProgram({
-                            vertex,
-                            fragment
-                        }),
-                        resources: {
-                            all: {
-                                iResolution: {value:  [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0], type: 'vec3<f32>'},
-                                iTime: { value: 0.1, type: 'f32' },
-                                iTimeDelta: { value: 0.01, type: 'f32' },
-                                iFrameRate: { value: 15.0, type: 'f32' },
-                                iFrame: { value: 0, type: 'i32' },
-                                iChannelTime: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>'}, // uniform float     iChannelTime[4]; 
-                                iChannelResolution: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },// uniform vec3      iChannelResolution[4];
-                                iMouse: { value: [200.0, 200.0, 0.0, 0.0], type: 'vec4<f32>' },
-                                iDate: {value: getCurrentDateVec4(), type: 'vec4<f32>'},
-                                iSampleRate: { value: 44100, type: 'f32' }
-                            },
-                        },
-                });
+            // **Mausbewegung erfassen**
+            app.renderer.events.pointermove = (event) => {
+                shader.resources.all.uniforms.iMouse.value = [event.globalX, event.globalY, 0.0, 0.0];
+            };
 
-                const backgroundMesh = new PIXI.Mesh({
-                        geometry,
-                        shader
-                });
-                app.stage.addChild(backgroundMesh)
+            // **Maustasten-Klick erfassen**
+            app.renderer.events.pointerdown = (event) => {
+                shader.resources.all.uniforms.iMouse.value[2] = event.globalX; // Click-X
+                shader.resources.all.uniforms.iMouse.value[3] = event.globalY; // Click-Y
+            };
 
-                // **Mausbewegung erfassen**
-                app.renderer.events.pointermove = (event) => {
-                    shader.resources.all.uniforms.iMouse.value = [event.globalX, event.globalY, 0.0, 0.0];
-                };
+            // **Maustasten-Loslassen**
+            app.renderer.events.pointerup = () => {
+                shader.resources.all.uniforms.iMouse.value[2] = 0.0;
+                shader.resources.all.uniforms.iMouse.value[3] = 0.0;
+            };
 
-                // **Maustasten-Klick erfassen**
-                app.renderer.events.pointerdown = (event) => {
-                    shader.resources.all.uniforms.iMouse.value[2] = event.globalX; // Click-X
-                    shader.resources.all.uniforms.iMouse.value[3] = event.globalY; // Click-Y
-                };
+            let frame = -1
 
-                // **Maustasten-Loslassen**
-                app.renderer.events.pointerup = () => {
-                    shader.resources.all.uniforms.iMouse.value[2] = 0.0;
-                    shader.resources.all.uniforms.iMouse.value[3] = 0.0;
-                };
-
-                let frame = -1 
-                
-                const elapsed = Date.now() - startLoadTime;
-                const remainingTime = Math.max(0, minimumLoadTime - elapsed);
-                setTimeout(() => {
-                    // Ladescreen ausblenden, wenn Assets geladen sind und Mindestzeit abgelaufen ist
-                    document.getElementById('loader').style.display = 'none';
-                  }, remainingTime);
-
-                app.ticker.add((time) => {
-                    const scrollPercent = _get_scroll_percentage()
-                    const modifiedPercent = 1.0 + scrollPercent*0.5
-
-                    frame++
-                    let deltaMS = time.deltaMS
-                    let fps = 1000/time.elapsedMS
-                    let lastTime = time.lastTime
-                 
-
-                    shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
-                    shader.resources.all.uniforms.iTime = lastTime / 1000;
-                    shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0]
-                    shader.resources.all.uniforms.iFrameRate = fps
-                    shader.resources.all.uniforms.iFrame = frame
-                    shader.resources.all.uniforms.iMouse = frame
-                    shader.resources.all.uniforms.iDate = getCurrentDateVec4()
-                })
-            }).catch((err) => {
-                console.error('Fehler beim Laden des Shaders:', err);
+            const elapsed = Date.now() - startLoadTime;
+            const remainingTime = Math.max(0, minimumLoadTime - elapsed);
+            setTimeout(() => {
+                // Ladescreen ausblenden, wenn Assets geladen sind und Mindestzeit abgelaufen ist
                 document.getElementById('loader').style.display = 'none';
-              });
-       
-        
+            }, remainingTime);
+
+            app.ticker.add((time) => {
+                if (!shader) return;
+                const scrollPercent = _get_scroll_percentage()
+                const modifiedPercent = 1.0 + scrollPercent * 0.5
+
+                frame++
+                let deltaMS = time.deltaMS
+                let fps = 1000 / time.elapsedMS
+                let lastTime = time.lastTime
+
+
+                shader.resources.all.uniforms.iTimeDelta = deltaMS / 1000;
+                shader.resources.all.uniforms.iTime = lastTime / 1000;
+                shader.resources.all.uniforms.iResolution = [app.renderer.width * app.renderer.resolution * modifiedPercent, app.renderer.height * app.renderer.resolution * modifiedPercent, 0.0]
+                shader.resources.all.uniforms.iFrameRate = fps
+                shader.resources.all.uniforms.iFrame = frame
+                shader.resources.all.uniforms.iMouse = frame
+                shader.resources.all.uniforms.iDate = getCurrentDateVec4()
+            })
+        }).catch((err) => {
+            console.error('Fehler beim Laden des Shaders:', err);
+            document.getElementById('loader').style.display = 'none';
+        });
+
+
     </script>
 </body>
 
